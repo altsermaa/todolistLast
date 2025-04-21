@@ -8,9 +8,6 @@ export const Container = () => {
   const [text, setText] = useState("");
   const [list, setList] = useState([]);
 
-  const btnText = ("All", "Active", "Completed");
-  const [clickedBtn, setClikedBtn] = useState("All");
-
   const handleChange = (e) => {
     setText(e.target.value);
   };
@@ -38,9 +35,18 @@ export const Container = () => {
     });
   };
 
-  // const handleActive = () => {
-  //   setActive(el.isChecked === false ? [...prev, { taskName: text, isChecked: false, id: randomID }]);
-  // };
+  const btnText = ["All", "Active", "Completed"];
+  const [clickedBtn, setClikedBtn] = useState("All");
+
+  const handleButtonClick = (text) => {
+    setClikedBtn(text);
+  };
+
+  const clearCompletedHandler = () => {
+    setList((prev) => prev.filter((el) => !el.isChecked));
+  };
+
+  // return list.length < 1 && "No tasks yet. Add one above!";
 
   return (
     <div
@@ -71,45 +77,82 @@ export const Container = () => {
           onClick={handleClick}
         />
       </div>
-      {clickedBtn.map((btn) => {
-        return <Button text={btnText} />;
-      })}
-
-      {/* <div style={{ marginTop: "20px", display: "flex", gap: "6px" }}>
-        <Button text="All" />
-        <Button text="Active" />
-        <Button text="Completed" />
-      </div> */}
-
-      {JSON.stringify(list)}
-
-      {list.map((el, index) => {
-        return (
-          <CheckBox
-            key={index}
-            // index={index}
-            text={el.taskName}
-            id={el.id}
-            isChecked={el.isChecked}
-            handleDone={handleDone}
-            handleDeleteBtn={handleDeleteBtn}
-          />
-        );
-      })}
-
-      {active.map((el, index) => {
-        return (
-          <CheckBox
-            key={index}
-            // index={index}
-            text={el.taskName}
-            id={el.id}
-            isChecked={el.isChecked}
-            handleDone={handleDone}
-            handleDeleteBtn={handleDeleteBtn}
-          />
-        );
-      })}
+      <div style={{ marginTop: "20px", display: "flex", gap: "6px" }}>
+        {btnText.map((btn) => {
+          return (
+            <Button
+              key={btn}
+              text={btn}
+              onClick={() => handleButtonClick(btn)}
+              color={clickedBtn === btn ? "white" : "black"}
+              backgroundColor={clickedBtn === btn ? "#3586f9" : "lightgrey"}
+            />
+          );
+        })}
+      </div>
+      {clickedBtn === "Active" &&
+        list
+          .filter((el) => !el.isChecked)
+          .map((el, index) => {
+            return (
+              <CheckBox
+                key={index}
+                text={el.taskName}
+                id={el.id}
+                isChecked={el.isChecked}
+                handleDone={handleDone}
+                handleDeleteBtn={handleDeleteBtn}
+              />
+            );
+          })}
+      {clickedBtn === "Completed" &&
+        list
+          .filter((el) => el.isChecked)
+          .map((el, index) => {
+            return (
+              <CheckBox
+                key={index}
+                text={el.taskName}
+                id={el.id}
+                isChecked={el.isChecked}
+                handleDone={handleDone}
+                handleDeleteBtn={handleDeleteBtn}
+              />
+            );
+          })}
+      {clickedBtn === "All" &&
+        list.map((el, index) => {
+          return (
+            <CheckBox
+              key={index}
+              text={el.taskName}
+              id={el.id}
+              isChecked={el.isChecked}
+              handleDone={handleDone}
+              handleDeleteBtn={handleDeleteBtn}
+            />
+          );
+        })}
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <p>
+          {list.filter((el) => el.isChecked).length} of {list.length} tasks
+          completed
+        </p>
+        <p style={{ color: "red" }} onClick={clearCompletedHandler}>
+          Clear completed
+        </p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "5px",
+          justifyContent: "center",
+          marginTop: "40px",
+        }}
+      >
+        <p>Powered by</p>
+        <p style={{ color: "blue" }}>Pinecone academy</p>
+      </div>
     </div>
   );
 };
